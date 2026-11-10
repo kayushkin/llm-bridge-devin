@@ -120,8 +120,10 @@ func fakeACP(behavior string) {
 			sid := params.SessionID
 			update(sid, map[string]any{"sessionUpdate": "agent_thought_chunk", "content": map[string]any{"type": "text", "text": "thinking"}})
 			update(sid, map[string]any{"sessionUpdate": "usage_update", "used": 100, "size": 1000, "_meta": map[string]any{"cognition.ai/inputTokens": 90, "cognition.ai/outputTokens": 10}})
+			update(sid, map[string]any{"sessionUpdate": "usage_update", "used": 100, "size": 1000, "_meta": map[string]any{"cognition.ai/inputTokens": 90, "cognition.ai/outputTokens": 10, "cognition.ai/subagent_context": map[string]any{"parentAgentId": "root"}}})
 			update(sid, map[string]any{"sessionUpdate": "tool_call", "toolCallId": "call_1", "kind": "execute", "title": "Ran ls", "rawInput": map[string]any{"command": "ls"}, "_meta": map[string]any{"cognition.ai/inferenceToolName": "exec"}})
 			update(sid, map[string]any{"sessionUpdate": "tool_call_update", "toolCallId": "call_1", "status": "completed", "content": []map[string]any{{"type": "content", "content": map[string]any{"type": "text", "text": "a.txt"}}}})
+			update(sid, map[string]any{"sessionUpdate": "usage_update", "used": 110, "size": 1000, "_meta": map[string]any{"cognition.ai/inputTokens": 100, "cognition.ai/outputTokens": 20}})
 			update(sid, map[string]any{"sessionUpdate": "agent_message_chunk", "content": map[string]any{"type": "text", "text": "done: "}})
 			update(sid, map[string]any{"sessionUpdate": "agent_message_chunk", "content": map[string]any{"type": "text", "text": "a.txt"}})
 			reply(map[string]any{"stopReason": "end_turn", "usage": map[string]any{"totalTokens": 120, "inputTokens": 100, "outputTokens": 20, "cachedReadTokens": 40}})

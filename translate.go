@@ -371,11 +371,24 @@ func (t *translator) finishTurn(result promptResult, model string, frame json.Ra
 			t.finishToolCallLocked(id, sessionUpdate{Status: "failed"}, nil)
 		}
 	}
+	// The usage in session/prompt's answer is the turn's LAST model call
+	// only, not the turn (measured on devin 3000.12.43: a four-call turn
+	// answered 14,082 input tokens, its usage_updates summed to 53,792). The
+	// turn's usage is the sum of its calls; the answer is used only when no
+	// usage_update came.
 	usage := msg.TokenUsage{ContextTokens: t.contextUsed, ContextLimit: t.contextSize}
-	if result.Usage != nil {
+	if len(t.callUsages) > 0 {
+		for _, call := range t.callUsages {
+			usage.InputTokens += call.InputTokens
+			usage.OutputTokens += call.OutputTokens
+		}
+		usage.TotalTokens = usage.InputTokens + usage.OutputTokens
+	} else if result.Usage != nil {
 		usage.InputTokens = result.Usage.InputTokens
 		usage.OutputTokens = result.Usage.OutputTokens
 		usage.TotalTokens = result.Usage.TotalTokens
+	}
+	if result.Usage != nil {
 		usage.CacheReadTokens = result.Usage.CachedReadTokens
 		usage.CacheWriteTokens = result.Usage.CachedWriteTokens
 		usage.ReasoningTokens = result.Usage.ThoughtTokens

@@ -56,6 +56,8 @@ Built and measured against devin 3000.12.43.
 | Gap | What the wrapper does |
 |---|---|
 | No cost in ACP: usage has tokens but no dollars, credits or ACUs | Reports tokens and leaves `cost` empty, rather than estimating from list prices |
+| The usage in `session/prompt`'s answer covers only the turn's last model call (a four-call turn answered 14,082 input tokens; its calls summed to 53,792) | Sums the turn's `usage_update` notifications, one per model call |
+| No cached-token counts | Cache fields stay empty, so input tokens overstate what a cached call costs |
 | No system prompt in ACP | Sends the system prompt as an embedded resource ahead of a new session's first message. Devin reads the project's `AGENTS.md` itself. Its one always-on rules file, `~/.devin/global_rules.md`, applies to every Devin session on the machine, so it cannot carry one session's prompt. |
 | No fork in ACP (`/fork` works only in the TUI) | Refuses with `FORK_UNSUPPORTED` |
 | `disabled_tools` read only when a session starts | A mid-session change is refused, not silently ignored |

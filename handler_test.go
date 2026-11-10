@@ -88,10 +88,12 @@ func TestTurnTranslatesToolCallsTextAndUsage(t *testing.T) {
 		t.Errorf("result text = %q, want the text after the last tool call", result.Result.Text)
 	}
 	usage := result.Result.Usage
-	if usage.InputTokens != 100 || usage.OutputTokens != 20 || usage.CacheReadTokens != 40 || usage.ContextTokens != 100 || usage.ContextLimit != 1000 {
-		t.Errorf("usage = %+v", usage)
+	// Two model calls (90/10 and 100/20); devin's prompt answer reports only
+	// the last (100/20), so the turn's usage must be the sum.
+	if usage.InputTokens != 190 || usage.OutputTokens != 30 || usage.TotalTokens != 220 || usage.CacheReadTokens != 40 || usage.ContextTokens != 110 || usage.ContextLimit != 1000 {
+		t.Errorf("usage = %+v, want the sum of both calls", usage)
 	}
-	if result.Result.APICalls != 1 || result.Result.Model != "swe-2-flash" {
+	if result.Result.APICalls != 2 || result.Result.Model != "swe-2-flash" {
 		t.Errorf("api calls %d model %q", result.Result.APICalls, result.Result.Model)
 	}
 	if result.HarnessSessionID != "fake-session" || result.BridgeSessionID != "br_test" {

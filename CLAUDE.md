@@ -15,7 +15,7 @@ bridge-server's `injectDevinHookSettings` sends `devin_hooks` (a hooks.v1 tree w
 - `--config` replaces `~/.config/devin/config.json`; the wrapper copies the user's file in first.
 - Top-level `disabled_tools` in the config removes tools from the model's list; it is read only when a session starts.
 - `devin models list --format json` is `{"families":[…]}`; each effort is its own variant (`claude-opus-5-5-high`). The session's `model` config option lists what the account may use.
-- ACP `usage` has tokens but no cost, credits or ACUs. Do not estimate a cost from list prices.
+- ACP `usage` has tokens but no cost, credits or ACUs, and no cached-token counts. Do not estimate a cost from list prices. The `usage` in `session/prompt`'s answer is the last model call only; the turn total is the sum of the untagged `usage_update` notifications (one per call; a second copy carries `cognition.ai/subagent_context`).
 - ACP takes no system prompt; it rides the first prompt as an embedded resource. `~/.devin/global_rules.md` is always on but machine-wide, so it cannot carry one session's prompt. Devin reads the project's `AGENTS.md` up to the repo root.
 - Stdio MCP servers in `session/new` work, inherit devin's environment, and are named `mcp__<server>__<tool>`.
 - One ACP turn in four stalled after its first tool call with no frame for minutes; `devin -p` never did. The watchdog (`DEVIN_TURN_IDLE_TIMEOUT_SEC`, default 600) exists for that.
