@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"runtime/debug"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -98,17 +99,24 @@ type claudeCodeMCPConfig struct {
 }
 
 // readMCPServers turns the provisioned MCP config into ACP's server list.
-func readMCPServers(path string) ([]mcpServer, error) {
-	if path == "" {
+// mcp_config is either a file path or the config itself as JSON text, the two
+// forms Claude Code's --mcp-config takes and bridge-server sends (bridge-agent
+// with no bundle sends `{"mcpServers":{}}` inline).
+func readMCPServers(pathOrJSON string) ([]mcpServer, error) {
+	trimmed := strings.TrimSpace(pathOrJSON)
+	if trimmed == "" {
 		return []mcpServer{}, nil
 	}
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read mcp_config: %w", err)
+	raw := []byte(trimmed)
+	if !strings.HasPrefix(trimmed, "{") {
+		var err error
+		if raw, err = os.ReadFile(trimmed); err != nil {
+			return nil, fmt.Errorf("read mcp_config: %w", err)
+		}
 	}
 	var config claudeCodeMCPConfig
 	if err := json.Unmarshal(raw, &config); err != nil {
-		return nil, fmt.Errorf("parse mcp_config %s: %w", path, err)
+		return nil, fmt.Errorf("parse mcp_config: %w", err)
 	}
 	names := make([]string, 0, len(config.MCPServers))
 	for name := range config.MCPServers {

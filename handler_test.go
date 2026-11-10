@@ -313,6 +313,10 @@ func TestReadMCPServersConvertsClaudeCodeShape(t *testing.T) {
 	if servers[1].Type != "sse" || servers[1].URL == "" || servers[1].Headers[0].Name != "Authorization" {
 		t.Errorf("remote server = %+v", servers[1])
 	}
+	inline, err := readMCPServers("{\"mcpServers\":{}}\n")
+	if err != nil || len(inline) != 0 {
+		t.Errorf("inline JSON mcp_config: %v %v", inline, err)
+	}
 	os.WriteFile(path, []byte(`{"mcpServers":{"broken":{}}}`), 0o600)
 	if _, err := readMCPServers(path); err == nil {
 		t.Error("a server with neither command nor url was accepted")

@@ -35,8 +35,8 @@ type StartParams struct {
 	SystemPrompt       string `json:"system_prompt,omitempty"`
 	AppendSystemPrompt string `json:"append_system_prompt,omitempty"`
 
-	// MCPConfig is the path of a Claude-Code-shaped MCP config file
-	// ({"mcpServers":{…}}) that bridge-server provisioned for the session.
+	// MCPConfig is a Claude-Code-shaped MCP config ({"mcpServers":{…}}):
+	// the path of the file bridge-server provisioned, or the JSON itself.
 	MCPConfig string `json:"mcp_config,omitempty"`
 
 	// DevinHooks is the hooks tree bridge-server builds for devin, in devin's
